@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ichat_app/allConstants/color_constants.dart';
-import 'package:ichat_app/authProvider/auth_provider.dart';
+import 'package:ichat_app/allProvider/auth_provider.dart';
 import 'package:ichat_app/screen/home_page.dart';
 import 'package:ichat_app/screen/login_page.dart';
 import 'package:provider/provider.dart';

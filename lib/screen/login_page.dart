@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ichat_app/allProvider/auth_provider.dart';
 import 'package:ichat_app/allWidgets/loading_view.dart';
-import 'package:ichat_app/authProvider/auth_provider.dart';
 import 'package:ichat_app/screen/home_page.dart';
 import 'package:provider/provider.dart';
 
@@ -18,13 +18,22 @@ class _LoginPageState extends State<LoginPage> {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
     switch (authProvider.status) {
       case Status.authenticated:
-        Fluttertoast.showToast(msg: 'Sign in success');
+        Fluttertoast.showToast(
+          msg: 'Sign in success',
+          backgroundColor: Colors.grey,
+        );
         break;
       case Status.authenticateError:
-        Fluttertoast.showToast(msg: 'Sign in fail');
+        Fluttertoast.showToast(
+          msg: 'Sign in fail',
+          backgroundColor: Colors.grey,
+        );
         break;
       case Status.authenticateCancelled:
-        Fluttertoast.showToast(msg: 'Sign in cancelled');
+        Fluttertoast.showToast(
+          msg: 'Sign in cancelled',
+          backgroundColor: Colors.grey,
+        );
         break;
       default:
         break;

@@ -5,7 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ichat_app/allConstants/app_constants.dart';
-import 'package:ichat_app/authProvider/auth_provider.dart';
+import 'package:ichat_app/allProvider/auth_provider.dart';
+import 'package:ichat_app/allProvider/setting_provider.dart';
 import 'package:ichat_app/screen/splash_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,12 +36,20 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AuthProvider>(
-            create: (_) => AuthProvider(
-                  googleSignIn: GoogleSignIn(),
-                  firebaseAuth: FirebaseAuth.instance,
-                  firebaseFirestore: firebaseFirestore,
-                  prefs: prefs,
-                ))
+          create: (_) => AuthProvider(
+            googleSignIn: GoogleSignIn(),
+            firebaseAuth: FirebaseAuth.instance,
+            firebaseFirestore: firebaseFirestore,
+            prefs: prefs,
+          ),
+        ),
+        Provider<SettingProvider>(
+          create: (_) => SettingProvider(
+            firebaseStorage: firebaseStorage,
+            firebaseFirestore: firebaseFirestore,
+            prefs: prefs,
+          ),
+        ),
       ],
       child: MaterialApp(
         title: AppConstants.appTitle,
