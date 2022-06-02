@@ -51,6 +51,9 @@ dependencies:
   provider: ^6.0.1
   country_code_picker: ^2.0.2
   url_launcher: ^6.0.12
+  rxdart: ^0.27.3
+  observable: ^0.24.0
+  signalr_client: any
 
 
 

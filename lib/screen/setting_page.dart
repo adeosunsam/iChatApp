@@ -59,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String phoneNumber = '';
 
   bool isLoading = false;
-  File? avaterImageFile;
+  File? avatarImageFile;
   late SettingProvider settingProvider;
 
   final TextEditingController _controller = TextEditingController();
@@ -100,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     if (image != null) {
       setState(() {
-        avaterImageFile = image;
+        avatarImageFile = image;
         isLoading = true;
       });
       uploadFile();
@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future uploadFile() async {
     String fileName = id;
     UploadTask uploadFile =
-        settingProvider.uploadFile(avaterImageFile!, fileName);
+        settingProvider.uploadFile(avatarImageFile!, fileName);
     try {
       TaskSnapshot snapshot = await uploadFile;
       photoUrl = await snapshot.ref.getDownloadURL();
@@ -198,7 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onPressed: getImage,
                 child: Container(
                   margin: const EdgeInsets.all(20),
-                  child: avaterImageFile == null
+                  child: avatarImageFile == null
                       ? photoUrl.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(45),
@@ -245,7 +245,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(45),
                           child: Image.file(
-                            avaterImageFile!,
+                            avatarImageFile!,
                             width: 90,
                             height: 90,
                             fit: BoxFit.cover,
