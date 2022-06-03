@@ -176,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         isLoading = false;
       });
-      Fluttertoast.showToast(msg: 'Update Success');
+      Fluttertoast.showToast(msg: 'Update Successful');
     }).catchError((err) {
       setState(() {
         isLoading = false;
@@ -427,7 +427,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
               Container(
-                margin: const EdgeInsets.only(left: 30, right: 30),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextButton(
                   onPressed: handleUpdateData,
                   child: const Text(

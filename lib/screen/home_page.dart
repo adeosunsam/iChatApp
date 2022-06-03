@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
             inactiveThumbColor: Colors.black45,
             inactiveTrackColor: Colors.grey,
           ),
-          onPressed: () => '',
+          onPressed: () {},
         ),
         actions: [
           PopupMenuButton<PopupChoices>(
