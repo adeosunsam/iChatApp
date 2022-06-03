@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ichat_app/allConstants/constants.dart';
 
 class HomeProvider {
   final FirebaseFirestore firebaseFirestore;
-  final SharedPreferences prefs;
 
   HomeProvider({
     required this.firebaseFirestore,
-    required this.prefs,
   });
 
   Future<void> updateDataFireStore(
@@ -19,5 +17,24 @@ class HomeProvider {
         .collection(collectionPath)
         .doc(path)
         .update(dataNeedUpdate);
+  }
+
+  Stream<QuerySnapshot> getStreamFireStore(
+    String pathCollection,
+    int limit,
+    String? textSearch,
+  ) {
+    if (textSearch?.isNotEmpty == true) {
+      return firebaseFirestore
+          .collection(pathCollection)
+          .limit(limit)
+          .where(FirestoreConstants.nickname, isEqualTo: textSearch)
+          .snapshots();
+    } else {
+      return firebaseFirestore
+          .collection(pathCollection)
+          .limit(limit)
+          .snapshots();
+    }
   }
 }

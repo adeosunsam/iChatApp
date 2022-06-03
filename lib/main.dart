@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ichat_app/allConstants/app_constants.dart';
 import 'package:ichat_app/allProvider/auth_provider.dart';
+import 'package:ichat_app/allProvider/home_provider.dart';
 import 'package:ichat_app/allProvider/setting_provider.dart';
 import 'package:ichat_app/screen/splash_page.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,11 @@ class MyApp extends StatelessWidget {
             firebaseStorage: firebaseStorage,
             firebaseFirestore: firebaseFirestore,
             prefs: prefs,
+          ),
+        ),
+        Provider<HomeProvider>(
+          create: (_) => HomeProvider(
+            firebaseFirestore: firebaseFirestore,
           ),
         ),
       ],
