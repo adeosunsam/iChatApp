@@ -60,8 +60,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void scrollListener() {
-    print(listScrollController.offset);
-    print(listScrollController.position);
     if (listScrollController.offset >=
             listScrollController.position.maxScrollExtent &&
         !listScrollController.position.outOfRange) {
