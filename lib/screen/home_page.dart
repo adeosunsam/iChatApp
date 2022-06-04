@@ -430,7 +430,7 @@ class _HomePageState extends State<HomePage> {
                           loadingBuilder: (BuildContext context, Widget child,
                               ImageChunkEvent? loadingProgress) {
                             if (loadingProgress == null) return child;
-                            return Container(
+                            return SizedBox(
                               width: 50,
                               height: 50,
                               child: CircularProgressIndicator(
