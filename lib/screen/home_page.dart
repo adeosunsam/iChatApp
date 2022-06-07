@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ichat_app/Utilities/debouncer.dart';
 import 'package:ichat_app/Utilities/utilities.dart';
@@ -30,6 +33,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin localNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   final GoogleSignIn googleSignIn = GoogleSignIn();
   final ScrollController listScrollController = ScrollController();
   Debouncer searchDebouncer = Debouncer(milliseconds: 300);
@@ -55,6 +62,9 @@ class _HomePageState extends State<HomePage> {
           MaterialPageRoute(builder: (context) => const LoginPage()),
           (Route<dynamic> route) => false);
     }
+
+    registerNotification();
+    configureLocalnotification();
     listScrollController.addListener(scrollListener);
   }
 
@@ -75,7 +85,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   int _limit = 20;
-  int _limitIncrement = 20;
+  final int _limitIncrement = 20;
   String _textSearch = '';
   bool isLoading = false;
 
@@ -166,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                         Icons.cancel,
                         color: ColorConstants.primaryColor,
                       ),
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                     ),
                     const Text(
                       'Cancel',
@@ -209,6 +219,69 @@ class _HomePageState extends State<HomePage> {
       case 1:
         exit(0);
     }
+  }
+
+  void registerNotification() {
+    firebaseMessaging.requestPermission();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        //show notification
+        showNotification(message.notification!);
+      }
+      return;
+    });
+    firebaseMessaging.getToken().then((token) {
+      if (token != null) {
+        homeProvider.updateDataFireStore(
+          FirestoreConstants.pathUserCollection,
+          currentUserId,
+          {"pushToken": token},
+        );
+      }
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: error.message.toString());
+    });
+  }
+
+  void configureLocalnotification() {
+    AndroidInitializationSettings initializationAndroidSettings =
+        AndroidInitializationSettings("app_icon");
+    IOSInitializationSettings initializationIOSSettings =
+        IOSInitializationSettings();
+    InitializationSettings initializationSettings = InitializationSettings(
+      android: initializationAndroidSettings,
+      iOS: initializationIOSSettings,
+    );
+    localNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void showNotification(RemoteNotification remoteNotification) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        const AndroidNotificationDetails(
+      "com.example.ichat_app",
+      "Just Chat",
+      playSound: true,
+      enableLights: true,
+      enableVibration: true,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    IOSNotificationDetails iosNotificationDetails =
+        const IOSNotificationDetails();
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: iosNotificationDetails,
+    );
+
+    await localNotificationsPlugin.show(
+      0,
+      remoteNotification.title,
+      remoteNotification.body,
+      notificationDetails,
+      payload: null,
+    );
   }
 
   @override
