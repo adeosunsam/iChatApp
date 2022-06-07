@@ -2,7 +2,7 @@
 
 A new Flutter project.
 
-![alt text](http://url/to/images/app_icon.png)
+![alt text](images/app_icon.png)
 
 ## Getting Started
 
