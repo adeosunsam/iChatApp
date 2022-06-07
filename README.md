@@ -2,9 +2,7 @@
 
 ## A mock of whatsapp chat
 
-![alt text](images\image1.jpeg) 
+![alt image1](images/image1.jpeg)   ![alt image2](images/image2.jpeg)
 
-![alt text](images\image2.jpeg)
-
-![alt text](images\image3.jpeg)
+![alt image2](images/image3.jpeg)
 
