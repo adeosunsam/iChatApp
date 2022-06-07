@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ichat_app/allConstants/constants.dart';
 import 'package:ichat_app/allModel/message_chat.dart';
@@ -167,7 +168,7 @@ class ChatPageState extends State<ChatPage> {
     if (content.trim().isNotEmpty) {
       controller.clear();
       chatProvider.sendMessage(
-        content,
+        content.trim(),
         type,
         groupChatId,
         currentUserId,
@@ -187,6 +188,33 @@ class ChatPageState extends State<ChatPage> {
                 currentUserId) ||
         index == 0) {
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isFirstMessageDaily(
+    DocumentSnapshot? prevDocument,
+    DocumentSnapshot? currentDocument,
+  ) {
+    if (prevDocument != null) {
+      var message2 = MessageChat.fromdocument(prevDocument);
+
+      print('Prev message ==> ${message2.content}');
+    }
+    if (currentDocument != null) {
+      var message = MessageChat.fromdocument(currentDocument);
+      print("cur message ==> ${message.content}");
+      print("------------------------------------------------");
+      if (prevDocument == null) {
+        return true;
+      } else {
+        if (_getDate(prevDocument) == _getDate(currentDocument)) {
+          return false;
+        } else {
+          return true;
+        }
+      }
     } else {
       return false;
     }
@@ -228,19 +256,42 @@ class ChatPageState extends State<ChatPage> {
     }
   }
 
+  String _getDate(DocumentSnapshot? document) {
+    if (document != null) {
+      MessageChat messageChat = MessageChat.fromdocument(document);
+      DateTime chatTime = DateTime.fromMillisecondsSinceEpoch(
+        int.parse(messageChat.timestamp),
+      );
+      int chatDay = chatTime.day;
+      int currentDay = DateTime.now().day;
+      if (currentDay == chatDay) {
+        return "Today";
+      } else if (currentDay - 1 == chatDay) {
+        return "Yesterday";
+      } else {
+        return DateFormat.MEd().format(DateTime.now()).split(", ")[1];
+      }
+    }
+    return "";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: isWhite ? Colors.white : Colors.grey,
       appBar: AppBar(
-        backgroundColor: isWhite ? Colors.white : Colors.grey,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: ColorConstants.primaryColor,
+          statusBarIconBrightness: Brightness.light,
+        ),
+        backgroundColor: isWhite ? Colors.white : ColorConstants.primaryColor,
         iconTheme: const IconThemeData(
-          color: ColorConstants.primaryColor,
+          color: ColorConstants.greyColor2,
         ),
         title: Text(
           peerNickname,
           style: const TextStyle(
-            color: ColorConstants.primaryColor,
+            color: ColorConstants.greyColor2,
           ),
         ),
         centerTitle: true,
@@ -254,9 +305,9 @@ class ChatPageState extends State<ChatPage> {
               _callPhoneNumber(callPhoneNumber);
             },
             icon: const Icon(
-              Icons.phone_iphone,
+              Icons.call,
               size: 30,
-              color: ColorConstants.primaryColor,
+              color: ColorConstants.greyColor2,
             ),
           ),
         ],
@@ -436,6 +487,8 @@ class ChatPageState extends State<ChatPage> {
           Flexible(
             child: SizedBox(
               child: TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
                 onSubmitted: (value) {
                   onSendMessage(controller.text, TypeMessage.text);
                 },
@@ -489,13 +542,59 @@ class ChatPageState extends State<ChatPage> {
                 if (snapshot.hasData) {
                   listMessage.addAll(snapshot.data!.docs);
                   return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: snapshot.data?.docs.length,
-                    reverse: true,
-                    controller: listScrollController,
-                    itemBuilder: (context, index) =>
-                        buildItem(index, snapshot.data?.docs[index]),
-                  );
+                      padding: const EdgeInsets.all(10),
+                      itemCount: snapshot.data?.docs.length,
+                      controller: listScrollController,
+                      reverse: true,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            // isFirstMessageDaily(
+                            //         index == 0
+                            //             ? null
+                            //             : snapshot.data?.docs[count - index],
+                            //         snapshot.data?.docs[count - index - 1])
+                            //     ? Padding(
+                            //         padding: const EdgeInsets.only(
+                            //           bottom: 12,
+                            //           top: 5,
+                            //         ),
+                            //         child: Row(
+                            //           children: [
+                            //             const Expanded(
+                            //               child: Divider(
+                            //                 color: ColorConstants.primaryColor,
+                            //                 thickness: 1,
+                            //               ),
+                            //             ),
+                            //             Container(
+                            //               padding: const EdgeInsets.symmetric(
+                            //                   horizontal: 5),
+                            //               child: Text(
+                            //                 _getDate(
+                            //                     snapshot.data?.docs[index]),
+                            //                 style: const TextStyle(
+                            //                   color:
+                            //                       ColorConstants.primaryColor,
+                            //                   fontSize: 14,
+                            //                   fontWeight: FontWeight.w500,
+                            //                 ),
+                            //               ),
+                            //             ),
+                            //             const Expanded(
+                            //               child: Divider(
+                            //                 color: ColorConstants.primaryColor,
+                            //                 thickness: 1,
+                            //               ),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       )
+                            //     : const SizedBox.shrink(),
+                            buildItem(index, snapshot.data?.docs[index]),
+                          ],
+                        );
+                      });
                 } else {
                   return const Center(
                     child: CircularProgressIndicator(
@@ -522,20 +621,46 @@ class ChatPageState extends State<ChatPage> {
             messageChat.type == TypeMessage.text
                 ? Container(
                     padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    width: 200,
-                    decoration: BoxDecoration(
+                    width: messageChat.content.length > 27 ? 210 : null,
+                    decoration: const BoxDecoration(
                       color: ColorConstants.greyColor2,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
                     margin: EdgeInsets.only(
                       bottom: isLastMessageRight(index) ? 20 : 10,
                       right: 10,
                     ),
-                    child: Text(
-                      messageChat.content,
-                      style: const TextStyle(
-                        color: ColorConstants.primaryColor,
-                      ),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: 25,
+                            bottom: 12,
+                          ),
+                          child: Text(
+                            messageChat.content,
+                            style: const TextStyle(
+                              color: ColorConstants.primaryColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Text(
+                            DateFormat("d MMM,").add_Hm().format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                    int.parse(messageChat.timestamp),
+                                  ),
+                                ),
+                            style: const TextStyle(
+                              color: ColorConstants.primaryColor,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : messageChat.type == TypeMessage.image
@@ -628,47 +753,47 @@ class ChatPageState extends State<ChatPage> {
             children: [
               Row(
                 children: [
-                  isLastMessageLeft(index)
-                      ? Material(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                          child: Image.network(
-                            peerAvatar,
-                            width: 35,
-                            height: 35,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  color: ColorConstants.themeColor,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                              null &&
-                                          loadingProgress.expectedTotalBytes !=
-                                              null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
-                            errorBuilder: (context, object, stackTrace) {
-                              return const Icon(
-                                Icons.account_circle,
-                                size: 35,
-                                color: ColorConstants.greyColor,
-                              );
-                            },
-                          ),
-                        )
-                      : Container(width: 35),
+                  // isLastMessageLeft(index)
+                  //     ? Material(
+                  //         borderRadius: const BorderRadius.all(
+                  //           Radius.circular(10),
+                  //         ),
+                  //         clipBehavior: Clip.hardEdge,
+                  //         child: Image.network(
+                  //           peerAvatar,
+                  //           width: 35,
+                  //           height: 35,
+                  //           fit: BoxFit.cover,
+                  //           loadingBuilder: (BuildContext context, Widget child,
+                  //               ImageChunkEvent? loadingProgress) {
+                  //             if (loadingProgress == null) return child;
+                  //             return Center(
+                  //               child: CircularProgressIndicator(
+                  //                 color: ColorConstants.themeColor,
+                  //                 value: loadingProgress.expectedTotalBytes !=
+                  //                             null &&
+                  //                         loadingProgress.expectedTotalBytes !=
+                  //                             null
+                  //                     ? loadingProgress.cumulativeBytesLoaded /
+                  //                         loadingProgress.expectedTotalBytes!
+                  //                     : null,
+                  //               ),
+                  //             );
+                  //           },
+                  //           errorBuilder: (context, object, stackTrace) {
+                  //             return const Icon(
+                  //               Icons.account_circle,
+                  //               size: 35,
+                  //               color: ColorConstants.greyColor,
+                  //             );
+                  //           },
+                  //         ),
+                  //       )
+                  //     : Container(width: 35),
                   messageChat.type == TypeMessage.text
                       ? Container(
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                          width: 200,
+                          width: messageChat.content.length > 26 ? 210 : null,
                           decoration: const BoxDecoration(
                             color: ColorConstants.primaryColor,
                             borderRadius: BorderRadius.all(
@@ -676,9 +801,37 @@ class ChatPageState extends State<ChatPage> {
                             ),
                           ),
                           margin: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            messageChat.content,
-                            style: TextStyle(color: Colors.white),
+                          child: Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 25,
+                                  bottom: 12,
+                                ),
+                                child: Text(
+                                  messageChat.content,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Text(
+                                  DateFormat("d MMM,").add_Hm().format(
+                                        DateTime.fromMillisecondsSinceEpoch(
+                                          int.parse(messageChat.timestamp),
+                                        ),
+                                      ),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       : messageChat.type == TypeMessage.image
@@ -762,24 +915,24 @@ class ChatPageState extends State<ChatPage> {
                             ),
                 ],
               ),
-              isLastMessageLeft(index)
-                  ? Container(
-                      margin:
-                          const EdgeInsets.only(left: 50, top: 5, bottom: 5),
-                      child: Text(
-                        DateFormat("dd MMM yyyy, hh:mm a").format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                            int.parse(messageChat.timestamp),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: ColorConstants.greyColor,
-                          fontSize: 12,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
+              // isLastMessageLeft(index)
+              //     ? Container(
+              //         margin:
+              //             const EdgeInsets.only(left: 15, top: 5, bottom: 5),
+              //         child: Text(
+              //           DateFormat("dd MMM yyyy, hh:mm a").format(
+              //             DateTime.fromMillisecondsSinceEpoch(
+              //               int.parse(messageChat.timestamp),
+              //             ),
+              //           ),
+              //           style: const TextStyle(
+              //             color: ColorConstants.greyColor,
+              //             fontSize: 12,
+              //             fontStyle: FontStyle.italic,
+              //           ),
+              //         ),
+              //       )
+              //     : const SizedBox.shrink(),
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),

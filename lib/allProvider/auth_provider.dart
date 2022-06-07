@@ -46,6 +46,7 @@ class AuthProvider extends ChangeNotifier {
     _status = Status.authenticating;
     notifyListeners();
 
+    //brings out all google account registered to your phone
     GoogleSignInAccount? googleUser = await googleSignIn.signIn();
     if (googleUser != null) {
       GoogleSignInAuthentication? googleAuth = await googleUser.authentication;
@@ -70,6 +71,7 @@ class AuthProvider extends ChangeNotifier {
             FirestoreConstants.nickname: firebaseUser.displayName,
             FirestoreConstants.photoUrl: firebaseUser.photoURL,
             FirestoreConstants.id: firebaseUser.uid,
+            FirestoreConstants.aboutMe: "Hey there! I am using Just Chat",
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
             FirestoreConstants.chattingWith: null,
           });
@@ -89,7 +91,12 @@ class AuthProvider extends ChangeNotifier {
           await prefs.setString(FirestoreConstants.id, userChat.id);
           await prefs.setString(FirestoreConstants.nickname, userChat.nickname);
           await prefs.setString(FirestoreConstants.photoUrl, userChat.photoUrl);
-          await prefs.setString(FirestoreConstants.aboutMe, userChat.aboutMe);
+          await prefs.setString(
+            FirestoreConstants.aboutMe,
+            userChat.aboutMe.isNotEmpty
+                ? userChat.aboutMe
+                : "Hey there! I am using Just Chat",
+          );
           await prefs.setString(
               FirestoreConstants.phoneNumber, userChat.phoneNumber);
         }

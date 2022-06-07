@@ -53,7 +53,6 @@ dependencies:
   url_launcher: ^6.0.12
   rxdart: ^0.27.3
   observable: ^0.24.0
-  signalr_client: any
 
 
 

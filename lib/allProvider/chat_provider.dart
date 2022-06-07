@@ -47,13 +47,8 @@ class ChatProvider {
         .snapshots();
   }
 
-  void sendMessage(
-    String content,
-    int type,
-    String groupChatId,
-    String currentUserId,
-    String peerId,
-  ) {
+  void sendMessage(String content, int type, String groupChatId,
+      String currentUserId, String peerId) {
     DocumentReference documentReference = firebaseFirestore
         .collection(FirestoreConstants.pathMessageCollection)
         .doc(groupChatId)
@@ -69,10 +64,7 @@ class ChatProvider {
     );
 
     FirebaseFirestore.instance.runTransaction((transaction) async {
-      transaction.set(
-        documentReference,
-        messageChat.toJson(),
-      );
+      transaction.set(documentReference, messageChat.toJson());
     });
   }
 }

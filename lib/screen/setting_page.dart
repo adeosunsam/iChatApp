@@ -10,7 +10,6 @@ import 'package:ichat_app/allConstants/constants.dart';
 import 'package:ichat_app/allModel/user_chat.dart';
 import 'package:ichat_app/allProvider/setting_provider.dart';
 import 'package:ichat_app/allWidgets/loading_view.dart';
-import 'package:ichat_app/main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -20,16 +19,16 @@ class SettingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: isWhite ? Colors.white : Colors.black,
+      backgroundColor: ColorConstants.grey,
       appBar: AppBar(
-        backgroundColor: isWhite ? Colors.white : Colors.black,
+        backgroundColor: ColorConstants.primaryColor,
         iconTheme: const IconThemeData(
-          color: ColorConstants.primaryColor,
+          color: ColorConstants.grey,
         ),
         title: const Text(
           AppConstants.settingsTitle,
           style: TextStyle(
-            color: ColorConstants.primaryColor,
+            color: ColorConstants.grey,
           ),
         ),
         centerTitle: true,
@@ -50,7 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   TextEditingController? controllerNickName;
   TextEditingController? controllerAboutMe;
 
-  String dialCodeDigits = '+00';
+  String dialCodeDigits = '+234';
 
   String id = '';
   String nickName = '';
@@ -197,20 +196,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               CupertinoButton(
                 onPressed: getImage,
                 child: Container(
-                  margin: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(10),
                   child: avatarImageFile == null
                       ? photoUrl.isNotEmpty
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(45),
+                              borderRadius: BorderRadius.circular(70),
                               child: Image.network(
                                 photoUrl,
                                 fit: BoxFit.cover,
-                                width: 90,
-                                height: 90,
+                                width: 120,
+                                height: 120,
                                 errorBuilder: (context, object, stackTrace) {
                                   return const Icon(
                                     Icons.account_circle,
-                                    size: 90,
+                                    size: 120,
                                     color: ColorConstants.greyColor,
                                   );
                                 },
@@ -218,8 +217,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     ImageChunkEvent? loadingProgress) {
                                   if (loadingProgress == null) return child;
                                   return SizedBox(
-                                    width: 90,
-                                    height: 90,
+                                    width: 120,
+                                    height: 120,
                                     child: Center(
                                       child: CircularProgressIndicator(
                                         color: Colors.grey,
@@ -239,15 +238,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             )
                           : const Icon(
                               Icons.account_circle,
-                              size: 90,
+                              size: 120,
                               color: ColorConstants.greyColor,
                             )
                       : ClipRRect(
-                          borderRadius: BorderRadius.circular(45),
+                          borderRadius: BorderRadius.circular(70),
                           child: Image.file(
                             avatarImageFile!,
-                            width: 90,
-                            height: 90,
+                            width: 120,
+                            height: 120,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -276,11 +275,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       data: Theme.of(context)
                           .copyWith(primaryColor: ColorConstants.primaryColor),
                       child: TextField(
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(
+                          color: ColorConstants.primaryColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                         decoration: const InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: ColorConstants.greyColor2,
+                              color: ColorConstants.tealGreen,
                             ),
                           ),
                           focusedBorder: UnderlineInputBorder(
@@ -290,7 +293,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           hintText: 'Write your name...',
                           contentPadding: EdgeInsets.all(5),
-                          hintStyle: TextStyle(color: ColorConstants.greyColor),
+                          hintStyle: TextStyle(
+                            color: ColorConstants.primaryColor,
+                          ),
                         ),
                         controller: controllerNickName,
                         onChanged: (value) => nickName = value,
@@ -319,11 +324,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       data: Theme.of(context)
                           .copyWith(primaryColor: ColorConstants.primaryColor),
                       child: TextField(
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(
+                          color: ColorConstants.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
                         decoration: const InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: ColorConstants.greyColor2,
+                              color: ColorConstants.tealGreen,
                             ),
                           ),
                           focusedBorder: UnderlineInputBorder(
@@ -362,12 +370,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       data: Theme.of(context)
                           .copyWith(primaryColor: ColorConstants.primaryColor),
                       child: TextField(
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(
+                          color: ColorConstants.primaryColor,
+                        ),
                         enabled: false,
                         decoration: InputDecoration(
                           hintText: phoneNumber,
                           contentPadding: const EdgeInsets.all(5),
-                          hintStyle: const TextStyle(color: Colors.grey),
+                          hintStyle: const TextStyle(
+                            color: ColorConstants.primaryColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -387,7 +401,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             dialCodeDigits = country.dialCode!;
                           });
                         },
-                        initialSelection: 'IT',
+                        initialSelection: 'NG',
                         showCountryOnly: false,
                         showOnlyCountryWhenClosed: false,
                         favorite: const ['+1', 'US', '+92', 'PAK'],
@@ -397,25 +411,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     margin: const EdgeInsets.only(left: 30, right: 30),
                     child: TextField(
-                      style: const TextStyle(color: Colors.grey),
+                      style: const TextStyle(
+                        color: ColorConstants.primaryColor,
+                      ),
                       decoration: InputDecoration(
                         enabledBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: ColorConstants.greyColor2,
+                            color: ColorConstants.primaryColor,
                           ),
                         ),
                         focusedBorder: const UnderlineInputBorder(
                           borderSide: BorderSide(
-                            color: ColorConstants.greyColor,
+                            color: ColorConstants.tealGreen,
                           ),
                         ),
                         hintText: 'Phone Number',
-                        hintStyle: const TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(
+                          color: ColorConstants.primaryColor,
+                        ),
                         prefix: Padding(
                           padding: const EdgeInsets.all(4),
                           child: Text(
                             dialCodeDigits,
-                            style: const TextStyle(color: Colors.grey),
+                            style: const TextStyle(
+                              color: ColorConstants.primaryColor,
+                            ),
                           ),
                         ),
                       ),
