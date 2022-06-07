@@ -2,6 +2,8 @@
 
 A new Flutter project.
 
+![alt text](http://url/to/images/app_icon.png)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
