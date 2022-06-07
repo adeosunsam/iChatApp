@@ -10,6 +10,6 @@ class ColorConstants {
   static const headerColor = Color.fromARGB(255, 170, 170, 170);
   static const tealGreen = Color(0xFF128C7E);
   static const tealGreenDark = Color.fromARGB(255, 3, 39, 35);
-  static const grey = Color.fromARGB(255, 184, 183, 183);
+  static const grey = Color.fromARGB(255, 202, 201, 201);
   static const grey2 = Color(0xff9E9E9E);
 }

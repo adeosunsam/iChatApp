@@ -26,7 +26,7 @@ class ChatProvider {
   Future<void> updateDataFireStore(
     String collectionPath,
     String path,
-    Map<String, String> dataNeedUpdate,
+    Map<String, String?> dataNeedUpdate,
   ) {
     return firebaseFirestore
         .collection(collectionPath)

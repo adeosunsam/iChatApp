@@ -12,6 +12,7 @@ import 'package:ichat_app/allProvider/chat_provider.dart';
 import 'package:ichat_app/allProvider/setting_provider.dart';
 import 'package:ichat_app/allWidgets/loading_view.dart';
 import 'package:ichat_app/main.dart';
+import 'package:ichat_app/screen/full_image.dart';
 import 'package:ichat_app/screen/login_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -54,7 +55,7 @@ class ChatPageState extends State<ChatPage> {
   List<QueryDocumentSnapshot> listMessage = List.from([]);
 
   int _limit = 20;
-  int _limitIncrement = 20;
+  final int _limitIncrement = 20;
   String groupChatId = "";
 
   File? imageFile;
@@ -64,6 +65,7 @@ class ChatPageState extends State<ChatPage> {
 
   final ScrollController listScrollController = ScrollController();
   final TextEditingController controller = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FocusNode focusNode = FocusNode();
 
   late ChatProvider chatProvider;
@@ -113,7 +115,7 @@ class ChatPageState extends State<ChatPage> {
     }
 
     chatProvider.updateDataFireStore(
-      FirestoreConstants.pathMessageCollection,
+      FirestoreConstants.pathUserCollection,
       currentUserId,
       {FirestoreConstants.chattingWith: peerId},
     );
@@ -194,9 +196,7 @@ class ChatPageState extends State<ChatPage> {
   }
 
   bool isFirstMessageDaily(
-    DocumentSnapshot? prevDocument,
-    DocumentSnapshot? currentDocument,
-  ) {
+      DocumentSnapshot? prevDocument, DocumentSnapshot? currentDocument) {
     if (prevDocument != null) {
       var message2 = MessageChat.fromdocument(prevDocument);
 
@@ -240,7 +240,7 @@ class ChatPageState extends State<ChatPage> {
       chatProvider.updateDataFireStore(
         FirestoreConstants.pathUserCollection,
         currentUserId,
-        {FirestoreConstants.chattingWith: ""},
+        {FirestoreConstants.chattingWith: null},
       );
       Navigator.pop(context);
     }
@@ -279,12 +279,13 @@ class ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: isWhite ? Colors.white : Colors.grey,
+      key: _scaffoldKey,
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarColor: ColorConstants.primaryColor,
           statusBarIconBrightness: Brightness.light,
         ),
-        backgroundColor: isWhite ? Colors.white : ColorConstants.primaryColor,
+        backgroundColor: ColorConstants.primaryColor,
         iconTheme: const IconThemeData(
           color: ColorConstants.greyColor2,
         ),
@@ -669,7 +670,16 @@ class ChatPageState extends State<ChatPage> {
                             bottom: isLastMessageRight(index) ? 20 : 10,
                             right: 10),
                         child: OutlinedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FullPhotoPage(
+                                  imageUrl: messageChat.content,
+                                ),
+                              ),
+                            );
+                          },
                           style: ButtonStyle(
                               padding: MaterialStateProperty.all<EdgeInsets>(
                             const EdgeInsets.all(0),
@@ -838,7 +848,16 @@ class ChatPageState extends State<ChatPage> {
                           ? Container(
                               margin: const EdgeInsets.only(left: 10),
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FullPhotoPage(
+                                        imageUrl: messageChat.content,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 style: ButtonStyle(
                                     padding:
                                         MaterialStateProperty.all<EdgeInsets>(
