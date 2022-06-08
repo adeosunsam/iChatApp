@@ -2,7 +2,7 @@
 
 ## A mock of whatsapp chat
 
-<a href="images/image1.jpeg"><img src="images/image1.jpeg" align="left" height="500" width="300" ></a>
+<a><img src="images/image1.jpeg" align="left" height="450" width="250" ></a>
 
 ### ![alt image1](images/image1.jpeg)   
 
